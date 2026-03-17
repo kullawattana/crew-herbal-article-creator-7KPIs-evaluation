@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audit System Documentation Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2E7D32;
+            --secondary: #1976D2;
+            --accent: #F57C00;
+            --success: #388E3C;
+            --bg: #FAFAFA;
+            --card: #FFFFFF;
+            --text: #212121;
+            --text-light: #757575;
+        }
+
+        body {
+            font-family: 'IBM Plex Sans Thai', sans-serif;
+            background: linear-gradient(135deg, #E8F5E9 0%, #E1F5FE 100%);
+            color: var(--text);
+            padding: 40px 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 16px;
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: var(--text-light);
+        }
+
+        .section {
+            background: var(--card);
+            padding: 32px;
+            border-radius: 16px;
+            margin-bottom: 32px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .icon {
+            font-size: 2.5rem;
+        }
+
+        .resource-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-top: 24px;
+        }
+
+        .resource-card {
+            background: #F5F5F5;
+            padding: 24px;
+            border-radius: 12px;
+            border-left: 4px solid;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .resource-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        }
+
+        .resource-card.docs { border-color: #1976D2; }
+        .resource-card.tools { border-color: #388E3C; }
+        .resource-card.examples { border-color: #F57C00; }
+        .resource-card.interactive { border-color: #7B1FA2; }
+
+        .resource-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .resource-desc {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            margin-bottom: 16px;
+        }
+
+        .resource-link {
+            display: inline-block;
+            padding: 8px 16px;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .resource-link:hover {
+            background: #1B5E20;
+            transform: translateX(4px);
+        }
+
+        .quick-start {
+            background: linear-gradient(135deg, var(--success) 0%, #66BB6A 100%);
+            color: white;
+            padding: 32px;
+            border-radius: 16px;
+            margin-bottom: 32px;
+        }
+
+        .quick-start h2 {
+            font-size: 2rem;
+            margin-bottom: 16px;
+        }
+
+        .steps {
+            display: grid;
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .step {
+            background: rgba(255,255,255,0.2);
+            padding: 16px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: white;
+            color: var(--success);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-top: 24px;
+        }
+
+        .feature {
+            text-align: center;
+            padding: 24px;
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 12px;
+        }
+
+        .feature-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #E3F2FD;
+            color: var(--secondary);
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .file-list {
+            background: #F5F5F5;
+            padding: 16px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            margin-top: 16px;
+        }
+
+        .file-item {
+            padding: 8px;
+            margin: 4px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .file-type {
+            padding: 2px 8px;
+            background: white;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌿 Audit System Documentation Hub</h1>
+            <p class="subtitle">ศูนย์รวมเอกสารและเครื่องมือสำหรับระบบ Audit สมุนไพร</p>
+        </header>
+
+        <!-- Quick Start -->
+        <div class="quick-start">
+            <h2>🚀 เริ่มต้นใช้งานอย่างรวดเร็ว</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div>อ่านเอกสาร Logic และ Flowchart เพื่อทำความเข้าใจระบบ</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div>ศึกษาหลักการคำนวณจาก Automated Evaluation Protocol</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div>ทดลองใช้ Score Calculator กับไฟล์ตัวอย่างที่แนบมา</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div>ดูตัวอย่าง Interactive Visualizations เพื่อเข้าใจลึกซึ้งยิ่งขึ้น</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Documentation Section -->
+        <div class="section">
+            <div class="section-title">
+                <span class="icon">📚</span>
+                เอกสารหลัก (Core Documentation)
+            </div>
+            <div class="resource-grid">
+                <div class="resource-card docs">
+                    <div class="resource-title">
+                        📄 Logic & Flowchart
+                        <span class="badge">DOCX</span>
+                    </div>
+                    <div class="resource-desc">
+                        เอกสารอธิบาย Logic และ Flowchart ของระบบ Audit แบบละเอียด รวมถึงหลักการให้คะแนนทั้ง 4 มิติ
+                    </div>
+                    <a href="audit_logic_flowchart.docx" class="resource-link" download>
+                        📥 ดาวน์โหลด DOCX
+                    </a>
+                </div>
+
+                <div class="resource-card docs">
+                    <div class="resource-title">
+                        🔍 Evaluation Protocol
+                        <span class="badge">DOCX</span>
+                    </div>
+                    <div class="resource-desc">
+                        อธิบายหลักการทำงานของ Automated Evaluation Protocol และวิธีการคำนวณจาก logs
+                    </div>
+                    <a href="automated_evaluation_protocol.docx" class="resource-link" download>
+                        📥 ดาวน์โหลด DOCX
+                    </a>
+                </div>
+
+                <div class="resource-card docs">
+                    <div class="resource-title">
+                        📖 README
+                        <span class="badge">MD</span>
+                    </div>
+                    <div class="resource-desc">
+                        คู่มือการใช้งาน Score Calculator พร้อมคำแนะนำและเคล็ดลับ
+                    </div>
+                    <a href="README_CALCULATOR.md" class="resource-link" download>
+                        📥 ดาวน์โหลด Markdown
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tools Section -->
+        <div class="section">
+            <div class="section-title">
+                <span class="icon">🛠️</span>
+                เครื่องมือ (Tools)
+            </div>
+            <div class="resource-grid">
+                <div class="resource-card tools">
+                    <div class="resource-title">
+                        🧮 Score Calculator
+                        <span class="badge">HTML</span>
+                    </div>
+                    <div class="resource-desc">
+                        เครื่องมือคำนวณคะแนนอัตโนมัติจากไฟล์ logs พร้อม UI ที่ใช้งานง่าย
+                    </div>
+                    <a href="score_calculator.html" class="resource-link" target="_blank">
+                        🚀 เปิดใช้งาน
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactive Visualizations -->
+        <div class="section">
+            <div class="section-title">
+                <span class="icon">🎨</span>
+                Visualizations (แบบ Interactive)
+            </div>
+            <div class="resource-grid">
+                <div class="resource-card interactive">
+                    <div class="resource-title">
+                        📊 Flowchart Visualization
+                        <span class="badge">HTML</span>
+                    </div>
+                    <div class="resource-desc">
+                        Flowchart แบบ interactive แสดง workflow ของระบบทั้งหมด 6 phases
+                    </div>
+                    <a href="audit_flowchart_interactive.html" class="resource-link" target="_blank">
+                        👁️ ดูตัวอย่าง
+                    </a>
+                </div>
+
+                <div class="resource-card interactive">
+                    <div class="resource-title">
+                        📈 Evaluation Protocol Demo
+                        <span class="badge">HTML</span>
+                    </div>
+                    <div class="resource-desc">
+                        ตัวอย่างการคำนวณแบบ step-by-step พร้อม log examples จาก Turmeric case
+                    </div>
+                    <a href="evaluation_protocol_interactive.html" class="resource-link" target="_blank">
+                        👁️ ดูตัวอย่าง
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sample Files -->
+        <div class="section">
+            <div class="section-title">
+                <span class="icon">📁</span>
+                ไฟล์ตัวอย่าง (Sample Files)
+            </div>
+            <p style="color: var(--text-light); margin-bottom: 16px;">
+                ไฟล์ตัวอย่างจากการทดสอบจริงกับ Turmeric (Curcuma longa) สำหรับทดลองใช้งาน Score Calculator
+            </p>
+            <div class="file-list">
+                <div class="file-item">
+                    <span>📄 task_11_20260206_112104.txt</span>
+                    <span class="file-type">Master Fact Sheet</span>
+                </div>
+                <div class="file-item">
+                    <span>📝 task_13_20260206_112104.txt</span>
+                    <span class="file-type">Final Article</span>
+                </div>
+                <div class="file-item">
+                    <span>🔍 task_14_20260206_112104.txt</span>
+                    <span class="file-type">Data Integrity Report</span>
+                </div>
+                <div class="file-item">
+                    <span>📊 task_15_20260206_112104.txt</span>
+                    <span class="file-type">Strategy Report</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features -->
+        <div class="section">
+            <div class="section-title">
+                <span class="icon">✨</span>
+                คุณสมบัติเด่น (Key Features)
+            </div>
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-icon">🎯</div>
+                    <div class="feature-title">ความแม่นยำสูง</div>
+                    <div class="feature-desc">คำนวณคะแนนตามสูตรที่ผ่านการทดสอบกับบทความ 95 篇</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">⚡</div>
+                    <div class="feature-title">ใช้งานง่าย</div>
+                    <div class="feature-desc">อัปโหลดไฟล์ 4 ไฟล์ แล้วคลิกคำนวณ ได้ผลทันที</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">📊</div>
+                    <div class="feature-title">รายงานละเอียด</div>
+                    <div class="feature-desc">แสดง Dropped และ Hallucinated Entities อย่างชัดเจน</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🔒</div>
+                    <div class="feature-title">ความปลอดภัย</div>
+                    <div class="feature-desc">ทำงานบนเครื่องของคุณ ไม่ส่งข้อมูลไปที่ใด</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div style="text-align: center; padding: 32px; color: var(--text-light);">
+            <p>📧 หากมีคำถามหรือพบปัญหา กรุณาตรวจสอบเอกสาร README_CALCULATOR.md</p>
+            <p style="margin-top: 8px; font-size: 0.9rem;">เวอร์ชัน 1.0 | อัปเดตล่าสุด: 6 กุมภาพันธ์ 2026</p>
+        </div>
+    </div>
+</body>
+</html>

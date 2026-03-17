@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automated Score Calculator - เครื่องคำนวณคะแนนอัตโนมัติ</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=IBM+Plex+Sans+Thai:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2E7D32;
+            --secondary: #1976D2;
+            --accent: #F57C00;
+            --success: #388E3C;
+            --warning: #F9A825;
+            --danger: #D32F2F;
+            --bg: #FAFAFA;
+            --card: #FFFFFF;
+            --text: #212121;
+            --text-light: #757575;
+            --border: #E0E0E0;
+        }
+
+        body {
+            font-family: 'IBM Plex Sans Thai', sans-serif;
+            background: linear-gradient(135deg, #E8F5E9 0%, #E1F5FE 100%);
+            color: var(--text);
+            padding: 40px 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--text-light);
+        }
+
+        .upload-section {
+            background: var(--card);
+            padding: 32px;
+            border-radius: 16px;
+            margin-bottom: 32px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .upload-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 24px;
+        }
+
+        .file-upload {
+            position: relative;
+        }
+
+        .file-upload label {
+            display: block;
+            padding: 16px;
+            background: #F5F5F5;
+            border: 2px dashed var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .file-upload label:hover {
+            background: #E8F5E9;
+            border-color: var(--primary);
+        }
+
+        .file-upload input[type="file"] {
+            display: none;
+        }
+
+        .file-upload.uploaded label {
+            background: #E8F5E9;
+            border-color: var(--success);
+        }
+
+        .file-name {
+            font-size: 0.85rem;
+            color: var(--success);
+            margin-top: 8px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .upload-icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        .btn {
+            padding: 14px 32px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'IBM Plex Sans Thai', sans-serif;
+            display: block;
+            width: 100%;
+            margin-top: 24px;
+        }
+
+        .btn:hover {
+            background: #1B5E20;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+        }
+
+        .btn:disabled {
+            background: #BDBDBD;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .results-section {
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .results-section.show {
+            display: block;
+        }
+
+        .score-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .score-card {
+            background: var(--card);
+            padding: 28px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border-left: 6px solid;
+            transition: transform 0.3s ease;
+        }
+
+        .score-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .score-card.robustness { border-color: #1976D2; }
+        .score-card.clarity { border-color: #388E3C; }
+        .score-card.efficacy { border-color: #F57C00; }
+        .score-card.feasibility { border-color: #7B1FA2; }
+
+        .score-label {
+            font-size: 1rem;
+            color: var(--text-light);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .score-value {
+            font-size: 3.5rem;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            margin: 12px 0;
+        }
+
+        .score-card.robustness .score-value { color: #1976D2; }
+        .score-card.clarity .score-value { color: #388E3C; }
+        .score-card.efficacy .score-value { color: #F57C00; }
+        .score-card.feasibility .score-value { color: #7B1FA2; }
+
+        .score-details {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            font-family: 'JetBrains Mono', monospace;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+        }
+
+        .decision-box {
+            background: var(--card);
+            padding: 32px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .decision-box.go {
+            background: linear-gradient(135deg, var(--success) 0%, #66BB6A 100%);
+            color: white;
+        }
+
+        .decision-box.conditional {
+            background: linear-gradient(135deg, var(--warning) 0%, #FFB74D 100%);
+            color: white;
+        }
+
+        .decision-box.nogo {
+            background: linear-gradient(135deg, var(--danger) 0%, #E57373 100%);
+            color: white;
+        }
+
+        .decision-label {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .decision-value {
+            font-size: 3rem;
+            font-weight: 700;
+            margin: 16px 0;
+        }
+
+        .details-section {
+            background: var(--card);
+            padding: 32px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            margin-bottom: 24px;
+        }
+
+        .details-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 16px;
+        }
+
+        .entity-list {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        .entity-item {
+            padding: 8px 12px;
+            margin: 6px 0;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .entity-item.found {
+            background: #E8F5E9;
+        }
+
+        .entity-item.not-found {
+            background: #FFF9C4;
+        }
+
+        .entity-item.dropped {
+            background: #FFEBEE;
+        }
+
+        .entity-status {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-ok {
+            background: #C8E6C9;
+            color: var(--success);
+        }
+
+        .status-warning {
+            background: #FFF59D;
+            color: #F57C00;
+        }
+
+        .status-error {
+            background: #FFCDD2;
+            color: var(--danger);
+        }
+
+        .error-message {
+            background: #FFEBEE;
+            border-left: 4px solid var(--danger);
+            padding: 16px;
+            border-radius: 8px;
+            margin: 16px 0;
+            color: var(--danger);
+        }
+
+        .info-box {
+            background: #E3F2FD;
+            border-left: 4px solid var(--secondary);
+            padding: 16px;
+            border-radius: 8px;
+            margin: 16px 0;
+            font-size: 0.95rem;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            display: none;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .model-input {
+            margin-top: 20px;
+        }
+
+        .model-input label {
+            display: block;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        .model-input input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: 'IBM Plex Sans Thai', sans-serif;
+            transition: border-color 0.3s;
+        }
+
+        .model-input input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .history-section {
+            background: var(--card);
+            padding: 32px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            margin-top: 32px;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .history-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .history-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-sm {
+            padding: 8px 18px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'IBM Plex Sans Thai', sans-serif;
+            transition: all 0.2s;
+        }
+
+        .btn-export {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-export:hover { background: #1565C0; }
+
+        .btn-clear {
+            background: #FFEBEE;
+            color: var(--danger);
+            border: 1px solid #FFCDD2;
+        }
+
+        .btn-clear:hover { background: #FFCDD2; }
+
+        .history-table-wrap {
+            overflow-x: auto;
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .history-table th {
+            background: #F5F5F5;
+            padding: 12px 14px;
+            text-align: left;
+            font-weight: 700;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .history-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+
+        .history-table tr:hover td {
+            background: #F9FBE7;
+        }
+
+        .history-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .badge-go { background: #C8E6C9; color: #2E7D32; }
+        .badge-conditional { background: #FFF9C4; color: #F57C00; }
+        .badge-nogo { background: #FFCDD2; color: #C62828; }
+
+        .history-empty {
+            text-align: center;
+            color: var(--text-light);
+            padding: 40px;
+            font-size: 1rem;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🧮 Automated Score Calculator</h1>
+            <p class="subtitle">เครื่องคำนวณคะแนนอัตโนมัติจาก Log Files</p>
+        </header>
+
+        <!-- Upload Section -->
+        <div class="upload-section">
+            <h2 style="color: var(--primary); margin-bottom: 16px;">📁 อัปโหลดไฟล์ Logs</h2>
+            <p style="color: var(--text-light); margin-bottom: 24px;">
+                กรุณาอัปโหลดไฟล์ที่จำเป็นสำหรับการคำนวณคะแนน
+            </p>
+
+            <div class="upload-grid">
+                <div class="file-upload" id="upload-task11">
+                    <label>
+                        <div class="upload-icon">📄</div>
+                        <div><strong>Task 11</strong></div>
+                        <div style="font-size: 0.85rem; color: var(--text-light);">Master Fact Sheet</div>
+                        <input type="file" id="file-task11" accept=".txt">
+                        <div class="file-name" id="name-task11"></div>
+                    </label>
+                </div>
+
+                <div class="file-upload" id="upload-task13">
+                    <label>
+                        <div class="upload-icon">📝</div>
+                        <div><strong>Task 13</strong></div>
+                        <div style="font-size: 0.85rem; color: var(--text-light);">Final Article</div>
+                        <input type="file" id="file-task13" accept=".txt">
+                        <div class="file-name" id="name-task13"></div>
+                    </label>
+                </div>
+
+                <div class="file-upload" id="upload-task14">
+                    <label>
+                        <div class="upload-icon">🔍</div>
+                        <div><strong>Task 14</strong></div>
+                        <div style="font-size: 0.85rem; color: var(--text-light);">Data Integrity Report</div>
+                        <input type="file" id="file-task14" accept=".txt">
+                        <div class="file-name" id="name-task14"></div>
+                    </label>
+                </div>
+
+                <div class="file-upload" id="upload-task15">
+                    <label>
+                        <div class="upload-icon">📊</div>
+                        <div><strong>Task 15</strong></div>
+                        <div style="font-size: 0.85rem; color: var(--text-light);">Strategy Report</div>
+                        <input type="file" id="file-task15" accept=".txt">
+                        <div class="file-name" id="name-task15"></div>
+                    </label>
+                </div>
+            </div>
+
+            <button class="btn" id="calculate-btn" disabled>
+                🧮 คำนวณและบันทึกคะแนน
+            </button>
+        </div>
+
+        <!-- Loading -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>กำลังประมวลผลและคำนวณคะแนน...</p>
+        </div>
+
+        <!-- Results Section -->
+        <div class="results-section" id="results">
+            <!-- Score Cards -->
+            <div class="score-cards">
+                <div class="score-card robustness">
+                    <div class="score-label">Robustness</div>
+                    <div class="score-value" id="score-robustness">--</div>
+                    <div class="score-details" id="details-robustness">
+                        คำนวณจาก: (N_total - N_drop) / N_total × 100
+                    </div>
+                </div>
+
+                <div class="score-card clarity">
+                    <div class="score-label">Clarity</div>
+                    <div class="score-value" id="score-clarity">--</div>
+                    <div class="score-details" id="details-clarity">
+                        คำนวณจาก: (1 - k/N) × 100
+                    </div>
+                </div>
+
+                <div class="score-card efficacy">
+                    <div class="score-label">Efficacy</div>
+                    <div class="score-value" id="score-efficacy">--</div>
+                    <div class="score-details" id="details-efficacy">
+                        คำนวณจาก: N_rel / N_total × 100
+                    </div>
+                </div>
+
+                <div class="score-card feasibility">
+                    <div class="score-label">Feasibility</div>
+                    <div class="score-value" id="score-feasibility">--</div>
+                    <div class="score-details" id="details-feasibility">
+                        คำนวณจาก: E_satisfied / E_total × 100
+                    </div>
+                </div>
+            </div>
+
+            <!-- Decision Box -->
+            <div class="decision-box" id="decision-box">
+                <div class="decision-label">การตัดสินใจ (Go/No-Go)</div>
+                <div class="decision-value" id="decision-value">--</div>
+                <p id="decision-reason">--</p>
+            </div>
+
+            <!-- Detailed Breakdown -->
+            <div class="details-section">
+                <div class="details-title">📋 รายละเอียดการคำนวณ</div>
+                <div id="calculation-details"></div>
+            </div>
+
+            <!-- Dropped Entities -->
+            <div class="details-section">
+                <div class="details-title">⚠️ Dropped Entities (ข้อมูลที่หายไป)</div>
+                <div class="entity-list" id="dropped-entities"></div>
+            </div>
+
+            <!-- Hallucinated Entities -->
+            <div class="details-section">
+                <div class="details-title">🚨 Hallucinated Entities (ข้อมูลปลอม)</div>
+                <div class="entity-list" id="hallucinated-entities"></div>
+            </div>
+        </div>
+
+        <!-- History Section -->
+        <div class="history-section">
+            <div class="history-header">
+                <div class="history-title">📊 ประวัติการบันทึกคะแนน</div>
+                <div class="history-actions">
+                    <button class="btn-sm btn-export" onclick="exportCSV()">⬇️ Export CSV</button>
+                    <button class="btn-sm btn-clear" onclick="clearHistory()">🗑️ ล้างประวัติ</button>
+                </div>
+            </div>
+            <div class="history-table-wrap">
+                <div id="history-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        // Database (localStorage)
+        // ============================================================
+        const DB_KEY = 'llm_score_history';
+
+        function loadHistory() {
+            try {
+                return JSON.parse(localStorage.getItem(DB_KEY) || '[]');
+            } catch {
+                return [];
+            }
+        }
+
+        function saveRecord(record) {
+            const history = loadHistory();
+            history.unshift(record); // newest first
+            localStorage.setItem(DB_KEY, JSON.stringify(history));
+        }
+
+        function clearHistory() {
+            if (!confirm('ต้องการล้างประวัติทั้งหมดใช่ไหม?')) return;
+            localStorage.removeItem(DB_KEY);
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const history = loadHistory();
+            const container = document.getElementById('history-container');
+
+            if (history.length === 0) {
+                container.innerHTML = '<div class="history-empty">ยังไม่มีข้อมูล — คำนวณคะแนนแล้วจะบันทึกที่นี่อัตโนมัติ</div>';
+                return;
+            }
+
+            const rows = history.map((r, i) => {
+                const badgeClass = r.decision === 'GO' ? 'badge-go' : r.decision === 'NO-GO' ? 'badge-nogo' : 'badge-conditional';
+                return `
+                    <tr>
+                        <td>${i + 1}</td>
+                        <td>${r.timestamp}</td>
+                        <td style="color:#1976D2;font-weight:700;font-family:'JetBrains Mono',monospace">${r.robustness}%</td>
+                        <td style="color:#388E3C;font-weight:700;font-family:'JetBrains Mono',monospace">${r.clarity}%</td>
+                        <td style="color:#F57C00;font-weight:700;font-family:'JetBrains Mono',monospace">${r.efficacy}%</td>
+                        <td style="color:#7B1FA2;font-weight:700;font-family:'JetBrains Mono',monospace">${r.feasibility}%</td>
+                        <td><span class="badge ${badgeClass}">${r.decision}</span></td>
+                    </tr>
+                `;
+            }).join('');
+
+            container.innerHTML = `
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>วันที่/เวลา</th>
+                            <th>Robustness</th>
+                            <th>Clarity</th>
+                            <th>Efficacy</th>
+                            <th>Feasibility</th>
+                            <th>Decision</th>
+                        </tr>
+                    </thead>
+                    <tbody>${rows}</tbody>
+                </table>
+            `;
+        }
+
+        function exportCSV() {
+            const history = loadHistory();
+            if (history.length === 0) {
+                alert('ยังไม่มีข้อมูลให้ export');
+                return;
+            }
+
+            const headers = ['#', 'Timestamp', 'Robustness(%)', 'Clarity(%)', 'Efficacy(%)', 'Feasibility(%)', 'Decision'];
+            const rows = history.map((r, i) => [
+                i + 1,
+                `"${r.timestamp}"`,
+                r.robustness,
+                r.clarity,
+                r.efficacy,
+                r.feasibility,
+                r.decision
+            ].join(','));
+
+            const csv = [headers.join(','), ...rows].join('\n');
+            const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `llm_scores_${new Date().toISOString().slice(0,10)}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // ============================================================
+        // File upload handlers
+        // ============================================================
+        const fileInputs = ['task11', 'task13', 'task14', 'task15'];
+        const uploadedFiles = {};
+
+        fileInputs.forEach(task => {
+            const input = document.getElementById(`file-${task}`);
+            const upload = document.getElementById(`upload-${task}`);
+            const nameDisplay = document.getElementById(`name-${task}`);
+
+            input.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    uploadedFiles[task] = file;
+                    upload.classList.add('uploaded');
+                    nameDisplay.textContent = file.name;
+                    checkAllFiles();
+                }
+            });
+        });
+
+        function checkAllFiles() {
+            const allUploaded = fileInputs.every(task => uploadedFiles[task]);
+            document.getElementById('calculate-btn').disabled = !allUploaded;
+        }
+
+        // Calculate button handler
+        document.getElementById('calculate-btn').addEventListener('click', async () => {
+            document.getElementById('loading').classList.add('show');
+            document.getElementById('results').classList.remove('show');
+
+            try {
+                // Read all files
+                const files = {};
+                for (const task of fileInputs) {
+                    files[task] = await readFile(uploadedFiles[task]);
+                }
+
+                // Calculate scores
+                const results = calculateScores(files);
+
+                // Display results
+                displayResults(results);
+
+                // Save to localStorage
+                const now = new Date();
+                const timestamp = now.toLocaleDateString('th-TH') + ' ' + now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+                saveRecord({
+                    timestamp,
+                    robustness: results.robustness,
+                    clarity: results.clarity,
+                    efficacy: results.efficacy,
+                    feasibility: results.feasibility,
+                    decision: document.getElementById('decision-value').textContent
+                });
+                renderHistory();
+
+                document.getElementById('loading').classList.remove('show');
+                document.getElementById('results').classList.add('show');
+            } catch (error) {
+                document.getElementById('loading').classList.remove('show');
+                alert('เกิดข้อผิดพลาดในการประมวลผล: ' + error.message);
+            }
+        });
+
+        function readFile(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result);
+                reader.onerror = reject;
+                reader.readAsText(file);
+            });
+        }
+
+        function calculateScores(files) {
+            const results = {
+                robustness: 0,
+                clarity: 0,
+                efficacy: 0,
+                feasibility: 0,
+                details: {},
+                droppedEntities: [],
+                hallucinatedEntities: []
+            };
+
+            // Parse Task 14 (Data Integrity Report)
+            const task14 = files.task14;
+            
+            // Extract Robustness score
+            const robustnessMatch = task14.match(/Collaboration Robustness.*?(\d+)%/i);
+            if (robustnessMatch) {
+                results.robustness = parseInt(robustnessMatch[1]);
+            }
+
+            // Extract Clarity score
+            const clarityMatch = task14.match(/Explanation Clarity.*?(\d+)%/i);
+            if (clarityMatch) {
+                results.clarity = parseInt(clarityMatch[1]);
+            }
+
+            // Extract dropped entities
+            const droppedSection = task14.match(/Dropped Entities.*?:([\s\S]*?)(?=\*\*|$)/i);
+            if (droppedSection) {
+                const entities = droppedSection[1].split('\n')
+                    .filter(line => line.trim().startsWith('-'))
+                    .map(line => line.trim().substring(1).trim());
+                results.droppedEntities = entities.filter(e => 
+                    !e.toLowerCase().includes('none found') && 
+                    !e.toLowerCase().includes('not found') &&
+                    e.length > 0
+                );
+            }
+
+            // Extract hallucinated entities
+            const hallucinatedSection = task14.match(/Hallucinated Entities.*?:([\s\S]*?)(?=\*\*|$)/i);
+            if (hallucinatedSection) {
+                const entities = hallucinatedSection[1].split('\n')
+                    .filter(line => line.trim().startsWith('-'))
+                    .map(line => line.trim().substring(1).trim());
+                results.hallucinatedEntities = entities.filter(e => 
+                    !e.toLowerCase().includes('none') && 
+                    e.length > 0
+                );
+            }
+
+            // Parse Task 15 (Strategy Report)
+            const task15 = files.task15;
+
+            // Extract Efficacy score
+            const efficacyMatch = task15.match(/Practical Efficacy.*?(\d+)%/i);
+            if (efficacyMatch) {
+                results.efficacy = parseInt(efficacyMatch[1]);
+            }
+
+            // Extract Feasibility score
+            const feasibilityMatch = task15.match(/Implementation Feasibility.*?(\d+)%/i);
+            if (feasibilityMatch) {
+                results.feasibility = parseInt(feasibilityMatch[1]);
+            }
+
+            // Count entities from Task 11
+            const task11 = files.task11;
+            const factMatches = task11.match(/\* \*\*.*?Fact.*?:/gi);
+            const totalFacts = factMatches ? factMatches.length : 0;
+            
+            const notFoundCount = (task11.match(/not found|none found/gi) || []).length;
+            const actualFacts = totalFacts - notFoundCount;
+
+            results.details = {
+                totalEntities: totalFacts,
+                notFoundEntities: notFoundCount,
+                actualEntities: actualFacts,
+                droppedCount: results.droppedEntities.length,
+                hallucinatedCount: results.hallucinatedEntities.length
+            };
+
+            return results;
+        }
+
+        function displayResults(results) {
+            // Display scores
+            document.getElementById('score-robustness').textContent = results.robustness + '%';
+            document.getElementById('score-clarity').textContent = results.clarity + '%';
+            document.getElementById('score-efficacy').textContent = results.efficacy + '%';
+            document.getElementById('score-feasibility').textContent = results.feasibility + '%';
+
+            // Update score details
+            document.getElementById('details-robustness').innerHTML = `
+                (${results.details.totalEntities} - ${results.details.droppedCount}) / ${results.details.totalEntities} × 100 = ${results.robustness}%
+            `;
+            document.getElementById('details-clarity').innerHTML = `
+                (1 - ${results.details.hallucinatedCount}/N) × 100 = ${results.clarity}%
+            `;
+
+            // Determine decision
+            let decision = 'GO';
+            let decisionClass = 'go';
+            let reason = 'ทุกคะแนนผ่านเกณฑ์ สามารถเผยแพร่ได้';
+
+            if (results.clarity < 100) {
+                decision = 'NO-GO';
+                decisionClass = 'nogo';
+                reason = 'มี Hallucination (Clarity < 100%) - ไม่สามารถเผยแพร่ได้';
+            } else if (results.robustness < 80 || results.feasibility < 60 || results.efficacy < 70) {
+                decision = 'NO-GO';
+                decisionClass = 'nogo';
+                reason = 'คะแนนบางด้านต่ำกว่าเกณฑ์ NO-GO';
+            } else if (results.robustness < 90 || results.efficacy < 85 || results.feasibility < 75) {
+                decision = 'CONDITIONAL GO';
+                decisionClass = 'conditional';
+                reason = 'คะแนนบางด้านต่ำกว่าเกณฑ์ GO แต่ยังไม่ถึง NO-GO - ต้องปรับปรุง';
+            }
+
+            const decisionBox = document.getElementById('decision-box');
+            decisionBox.className = `decision-box ${decisionClass}`;
+            document.getElementById('decision-value').textContent = decision;
+            document.getElementById('decision-reason').textContent = reason;
+
+            // Display calculation details
+            const detailsHTML = `
+                <div class="info-box">
+                    <strong>การคำนวณ Robustness:</strong><br>
+                    • Total Entities: ${results.details.totalEntities}<br>
+                    • "Not Found" Entities: ${results.details.notFoundEntities} (ไม่นับ)<br>
+                    • Dropped Entities: ${results.details.droppedCount}<br>
+                    • Score: (${results.details.totalEntities} - ${results.details.droppedCount}) / ${results.details.totalEntities} × 100 = ${results.robustness}%
+                </div>
+                <div class="info-box">
+                    <strong>การคำนวณ Clarity:</strong><br>
+                    • Hallucinated Entities: ${results.details.hallucinatedCount}<br>
+                    • Score: ${results.clarity}%
+                </div>
+                <div class="info-box">
+                    <strong>เกณฑ์การตัดสินใจ:</strong><br>
+                    • GO: Robustness ≥90%, Clarity=100%, Efficacy ≥85%, Feasibility ≥75%<br>
+                    • CONDITIONAL GO: คะแนนบางด้านต่ำกว่า GO แต่ไม่ถึง NO-GO<br>
+                    • NO-GO: Clarity <100% หรือ Robustness <80% หรือ Feasibility <60% หรือ Efficacy <70%
+                </div>
+            `;
+            document.getElementById('calculation-details').innerHTML = detailsHTML;
+
+            // Display dropped entities
+            if (results.droppedEntities.length === 0) {
+                document.getElementById('dropped-entities').innerHTML = `
+                    <div class="entity-item found">
+                        <span>✓ ไม่มี Dropped Entities</span>
+                        <span class="entity-status status-ok">OK</span>
+                    </div>
+                `;
+            } else {
+                const droppedHTML = results.droppedEntities.map(entity => `
+                    <div class="entity-item dropped">
+                        <span>${entity}</span>
+                        <span class="entity-status status-error">DROPPED</span>
+                    </div>
+                `).join('');
+                document.getElementById('dropped-entities').innerHTML = droppedHTML;
+            }
+
+            // Display hallucinated entities
+            if (results.hallucinatedEntities.length === 0) {
+                document.getElementById('hallucinated-entities').innerHTML = `
+                    <div class="entity-item found">
+                        <span>✓ ไม่มี Hallucination</span>
+                        <span class="entity-status status-ok">OK</span>
+                    </div>
+                `;
+            } else {
+                const hallucinatedHTML = results.hallucinatedEntities.map(entity => `
+                    <div class="entity-item dropped">
+                        <span>${entity}</span>
+                        <span class="entity-status status-error">HALLUCINATED</span>
+                    </div>
+                `).join('');
+                document.getElementById('hallucinated-entities').innerHTML = hallucinatedHTML;
+            }
+        }
+        // Render history on page load
+        renderHistory();
+    </script>
+</body>
+</html>
