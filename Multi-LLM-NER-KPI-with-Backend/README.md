@@ -1,39 +1,39 @@
-# 🤖 Multi-LLM NER Backend
+# Multi-LLM NER Backend
 
-Backend server ที่รองรับ AI Models หลายตัวสำหรับการวิเคราะห์ Named Entities ในบทความสมุนไพร
+Backend server supporting multiple AI models for Named Entity Recognition analysis in herbal medicine articles.
 
-## 🎯 รองรับ AI Models
+## Supported AI Models
 
-### 🟠 **Claude (Anthropic)**
-- Claude Sonnet 4 (แนะนำ - สมดุลดี)
-- Claude Opus 4 (แม่นยำสูงสุด)
-- Claude Haiku 4 (เร็วที่สุด)
+### Claude (Anthropic)
+- Claude Sonnet 4 (Recommended — balanced performance)
+- Claude Opus 4 (Highest accuracy)
+- Claude Haiku 4 (Fastest)
 
-### 🟢 **GPT (OpenAI)**
-- GPT-4o (ใหม่ล่าสุด)
+### GPT (OpenAI)
+- GPT-4o (Latest)
 - GPT-4 Turbo
-- GPT-3.5 Turbo (ประหยัด)
+- GPT-3.5 Turbo (Budget-friendly)
 
-### 🔵 **Gemini (Google)**
-- Gemini 2.0 Flash (รุ่นใหม่)
+### Gemini (Google)
+- Gemini 2.0 Flash (New)
 - Gemini 1.5 Pro
 
-### 🟣 **Llama (Meta via Groq)**
-- Llama 3.3 70B (แม่นยำ)
-- Llama 3.1 8B (เร็ว)
+### Llama (Meta via Groq)
+- Llama 3.3 70B (High accuracy)
+- Llama 3.1 8B (Fast)
 
 ---
 
-## 🚀 การติดตั้งและใช้งาน
+## Getting Started
 
-### **ขั้นตอนที่ 1: ติดตั้ง Dependencies**
+### Step 1: Install Dependencies
 
 ```bash
 cd backend
 npm install
 ```
 
-**Dependencies ที่จะติดตั้ง:**
+**Dependencies installed:**
 - `express` - Web framework
 - `@anthropic-ai/sdk` - Claude API
 - `openai` - GPT API
@@ -44,16 +44,16 @@ npm install
 
 ---
 
-### **ขั้นตอนที่ 2: สร้างไฟล์ .env**
+### Step 2: Create .env File
 
 ```bash
 cp .env.example .env
 ```
 
-แก้ไขไฟล์ `.env` และใส่ API keys ของคุณ:
+Edit `.env` and add your API keys:
 
 ```env
-# ใส่เฉพาะ API keys ของ providers ที่คุณต้องการใช้
+# Add only the API keys for the providers you want to use
 
 # Anthropic Claude
 ANTHROPIC_API_KEY=sk-ant-xxxxx
@@ -70,13 +70,13 @@ GROQ_API_KEY=gsk_xxxxx
 
 ---
 
-### **ขั้นตอนที่ 3: รัน Server**
+### Step 3: Start the Server
 
 ```bash
 npm start
 ```
 
-หรือใช้ development mode (auto-reload):
+Or use development mode (auto-reload):
 
 ```bash
 npm run dev
@@ -102,31 +102,46 @@ Available models:
 
 ---
 
-### **ขั้นตอนที่ 4: เปิด Frontend**
+### Step 4: Open the Frontend
 
 ```bash
-# เปิดไฟล์ HTML ใน browser
-open public/index.html
+# Open the HTML file directly in your browser
+open index.html
 ```
-
-หรือ serve ผ่าน HTTP server:
-
-```bash
-# ติดตั้ง http-server (ครั้งเดียว)
-npm install -g http-server
-
-# รัน server
-cd public
-http-server -p 8080
-```
-
-แล้วเปิด: `http://localhost:8080`
 
 ---
 
-## 📡 API Endpoints
+## Using the Frontend (index.html)
 
-### **1. Get Available Models**
+### Steps
+1. **Select an AI Model** from the dropdown (Claude, GPT, Gemini, Llama)
+2. **Upload an article file** (Task 13 .txt)
+3. **Fill in article info** *(optional)*
+   - 🌿 **Herb Name** — e.g., Ginger, Turmeric, Garlic
+   - 📄 **Article Title** — for report identification (defaults to filename if left blank)
+4. **Click "Analyze with AI"** — wait for analysis across 3 categories
+
+### Results
+- **PASS/FAIL** with entity counts per category
+- Summary cards: Cultural, Scientific, Safety
+- AI Summary (in Thai)
+- Entity details with reasoning
+
+### Export Report
+All formats include **Herb Name** and **Article Title**:
+
+| Format | Button |
+|--------|--------|
+| Text (.txt) | Export TXT |
+| Word (.docx) | Export Word |
+| Excel (.xlsx) | Export Excel |
+| PDF (.pdf) | Export PDF |
+
+---
+
+## API Endpoints
+
+### 1. Get Available Models
 
 ```
 GET /api/models
@@ -149,7 +164,7 @@ GET /api/models
 
 ---
 
-### **2. Analyze Entities**
+### 2. Analyze Entities
 
 ```
 POST /api/analyze
@@ -158,15 +173,15 @@ POST /api/analyze
 **Request Body:**
 ```json
 {
-  "text": "บทความเกี่ยวกับสมุนไพร...",
+  "text": "Article about herbal medicine...",
   "category": "cultural",
   "model": "claude-sonnet-4"
 }
 ```
 
 **Parameters:**
-- `text` (required) - บทความที่ต้องการวิเคราะห์ (ต้องยาวกว่า 100 ตัวอักษร)
-- `category` (required) - `cultural`, `scientific`, หรือ `safety`
+- `text` (required) - Article text to analyze (must be longer than 100 characters)
+- `category` (required) - `cultural`, `scientific`, or `safety`
 - `model` (optional) - default: `claude-sonnet-4`
 
 **Response:**
@@ -188,7 +203,7 @@ POST /api/analyze
 
 ---
 
-### **3. Generate Summary**
+### 3. Generate Summary
 
 ```
 POST /api/summary
@@ -207,14 +222,14 @@ POST /api/summary
 **Response:**
 ```json
 {
-  "summary": "บทความมีความสมบูรณ์สูงในทุกมิติ...",
+  "summary": "The article has high completeness across all dimensions...",
   "model_used": "claude-sonnet-4"
 }
 ```
 
 ---
 
-### **4. Health Check**
+### 4. Health Check
 
 ```
 GET /health
@@ -231,148 +246,148 @@ GET /health
 
 ---
 
-## 🔑 วิธีขอ API Keys
+## Getting API Keys
 
-### **1. Anthropic Claude**
-- ไปที่: https://console.anthropic.com/
-- สมัครสมาชิก / Login
-- ไปที่ API Keys
-- สร้าง API key ใหม่
+### 1. Anthropic Claude
+- Go to: https://console.anthropic.com/
+- Sign up / Log in
+- Navigate to API Keys
+- Create a new API key
 - Copy `sk-ant-xxxxx`
 
-**ราคา:**
+**Pricing:**
 - Sonnet 4: ~$3/1M input tokens
-- Opus 4: ~$15/1M input tokens  
+- Opus 4: ~$15/1M input tokens
 - Haiku 4: ~$0.25/1M input tokens
 
 ---
 
-### **2. OpenAI GPT**
-- ไปที่: https://platform.openai.com/api-keys
-- Login / สมัครสมาชิก
-- สร้าง API key
+### 2. OpenAI GPT
+- Go to: https://platform.openai.com/api-keys
+- Log in / Sign up
+- Create an API key
 - Copy `sk-xxxxx`
 
-**ราคา:**
+**Pricing:**
 - GPT-4o: ~$5/1M input tokens
 - GPT-4: ~$30/1M input tokens
 - GPT-3.5: ~$0.5/1M input tokens
 
 ---
 
-### **3. Google Gemini**
-- ไปที่: https://makersuite.google.com/app/apikey
-- Login ด้วย Google Account
-- สร้าง API key
-- Copy key
+### 3. Google Gemini
+- Go to: https://makersuite.google.com/app/apikey
+- Log in with Google Account
+- Create an API key
+- Copy the key
 
-**ราคา:**
+**Pricing:**
 - Gemini 2.0 Flash: Free tier + ~$0.075/1M tokens
 - Gemini 1.5 Pro: ~$1.25/1M tokens
 
 ---
 
-### **4. Groq (Llama)**
-- ไปที่: https://console.groq.com/keys
-- สมัครสมาชิก / Login
-- สร้าง API key
+### 4. Groq (Llama)
+- Go to: https://console.groq.com/keys
+- Sign up / Log in
+- Create an API key
 - Copy `gsk_xxxxx`
 
-**ราคา:**
-- **ฟรี!** (มี rate limit)
+**Pricing:**
+- **Free!** (with rate limits)
 - Llama 3.3 70B: Free
 - Llama 3.1 8B: Free
 
 ---
 
-## 💡 เทคนิคการเลือก Model
+## Choosing a Model
 
-### **เลือกตามงบประมาณ:**
+### By Budget
 
-| งบประมาณ | แนะนำ |
-|----------|-------|
-| **ฟรี** | Groq (Llama 3.3 70B) |
-| **ประหยัด** | GPT-3.5 Turbo, Claude Haiku 4 |
-| **ปานกลาง** | Claude Sonnet 4, Gemini 2.0 Flash |
-| **แม่นยำสูงสุด** | Claude Opus 4, GPT-4 |
-
----
-
-### **เลือกตามความเร็ว:**
-
-| ต้องการ | แนะนำ |
-|---------|-------|
-| **เร็วที่สุด** | Claude Haiku 4, Llama 3.1 8B |
-| **เร็วพอสมควร** | Gemini 2.0 Flash, GPT-4o |
-| **ปานกลาง** | Claude Sonnet 4, Llama 3.3 70B |
-| **ช้า แต่แม่นยำ** | Claude Opus 4, GPT-4 |
+| Budget | Recommended |
+|--------|-------------|
+| **Free** | Groq (Llama 3.3 70B) |
+| **Low** | GPT-3.5 Turbo, Claude Haiku 4 |
+| **Medium** | Claude Sonnet 4, Gemini 2.0 Flash |
+| **Highest accuracy** | Claude Opus 4, GPT-4 |
 
 ---
 
-### **เลือกตามความแม่นยำ:**
+### By Speed
 
-| ระดับแม่นยำ | แนะนำ |
-|------------|-------|
+| Need | Recommended |
+|------|-------------|
+| **Fastest** | Claude Haiku 4, Llama 3.1 8B |
+| **Fast** | Gemini 2.0 Flash, GPT-4o |
+| **Moderate** | Claude Sonnet 4, Llama 3.3 70B |
+| **Slow but accurate** | Claude Opus 4, GPT-4 |
+
+---
+
+### By Accuracy
+
+| Accuracy Level | Recommended |
+|----------------|-------------|
 | **95%+** | Claude Opus 4, GPT-4 |
-| **90-95%** | Claude Sonnet 4, GPT-4o, Llama 3.3 70B |
-| **85-90%** | Gemini 2.0 Flash, GPT-3.5 |
-| **80-85%** | Claude Haiku 4, Llama 3.1 8B |
+| **90–95%** | Claude Sonnet 4, GPT-4o, Llama 3.3 70B |
+| **85–90%** | Gemini 2.0 Flash, GPT-3.5 |
+| **80–85%** | Claude Haiku 4, Llama 3.1 8B |
 
 ---
 
-## 🔧 Troubleshooting
+## Troubleshooting
 
-### **ปัญหา: API Key ไม่ถูกต้อง**
+### Invalid API Key
 ```
 Error: Invalid API key
 ```
 
-**แก้ไข:**
-1. ตรวจสอบ API key ในไฟล์ `.env`
-2. ตรวจสอบว่า copy มาถูกต้อง (ไม่มีช่องว่าง)
-3. ตรวจสอบว่า API key ยังใช้งานได้ (ไม่ถูก revoke)
+**Fix:**
+1. Check the API key in your `.env` file
+2. Make sure it was copied correctly (no extra spaces)
+3. Verify the API key is still active (not revoked)
 
 ---
 
-### **ปัญหา: CORS Error**
+### CORS Error
 ```
 Access to fetch has been blocked by CORS policy
 ```
 
-**แก้ไข:**
-- Server มี CORS middleware แล้ว
-- ตรวจสอบว่า Frontend เรียก `http://localhost:3000` ถูกต้อง
-- ลอง restart server
+**Fix:**
+- The server already includes CORS middleware
+- Verify the frontend is calling `http://localhost:3000`
+- Try restarting the server
 
 ---
 
-### **ปัญหา: Rate Limit**
+### Rate Limit
 ```
 Error: Rate limit exceeded
 ```
 
-**แก้ไข:**
-- รอสักครู่แล้วลองใหม่
-- ใช้ Model ที่มี rate limit สูงกว่า
-- Groq: ใช้ Llama 3.1 8B แทน 3.3 70B
+**Fix:**
+- Wait a moment and try again
+- Switch to a model with higher rate limits
+- Groq: use Llama 3.1 8B instead of 3.3 70B
 
 ---
 
-### **ปัญหา: Server ไม่ทำงาน**
+### Server Not Running
 ```
 Error: connect ECONNREFUSED
 ```
 
-**แก้ไข:**
-1. ตรวจสอบว่า server รันอยู่: `npm start`
-2. ตรวจสอบ port: `http://localhost:3000`
-3. ดู console log หา error
+**Fix:**
+1. Make sure the server is running: `npm start`
+2. Check the port: `http://localhost:3000`
+3. Check console logs for errors
 
 ---
 
-## 📊 ตัวอย่างการใช้งาน
+## Example Usage
 
-### **ทดสอบด้วย curl:**
+### Testing with curl
 
 ```bash
 # Get models
@@ -399,9 +414,9 @@ curl -X POST http://localhost:3000/api/analyze \
 
 ---
 
-## 🐳 Docker Support (Optional)
+## Docker Support (Optional)
 
-สร้าง `Dockerfile`:
+Create a `Dockerfile`:
 
 ```dockerfile
 FROM node:18-alpine
@@ -427,23 +442,27 @@ docker run -p 3000:3000 --env-file .env multi-llm-ner
 
 ---
 
-## 📝 License
+## License
 
 MIT
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Pull requests are welcome!
 
 ---
 
-## 📧 Support
+## Support
 
-หากมีปัญหาหรือคำถาม กรุณาเปิด Issue ใน GitHub
+If you encounter issues or have questions, please open an Issue on GitHub.
 
 ---
 
-**เวอร์ชัน:** 1.0.0  
-**วันที่อัปเดต:** 6 กุมภาพันธ์ 2026
+**Version:** 1.1.0
+**Last updated:** March 17, 2026
+
+### Changelog
+- **v1.1.0** - Added Herb Name and Article Title inputs in Frontend; fields appear in all export formats
+- **v1.0.0** - Multi-LLM NER analysis with TXT/Word/Excel/PDF export

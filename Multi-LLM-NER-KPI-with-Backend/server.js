@@ -72,7 +72,7 @@ const MODEL_CONFIGS = {
     // Google Gemini models
     'gemini-2.0-flash': {
         provider: 'google',
-        model: 'gemini-2.0-flash-exp',
+        model: 'gemini-2.0-flash',
         maxTokens: 4000
     },
     'gemini-1.5-pro': {

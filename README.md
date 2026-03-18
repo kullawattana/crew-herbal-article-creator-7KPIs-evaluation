@@ -2,6 +2,11 @@
 
 A two-part toolkit for analyzing and evaluating AI-generated herbal medicine articles using multiple large language models (LLMs).
 
+| Component | Version |
+|---|---|
+| Multi-LLM-NER-KPI-with-Backend | v1.1.0 |
+| Multi-LLM-4KPIs-Evaluation | v2.0 |
+
 ---
 
 ## Repository Structure
@@ -24,16 +29,24 @@ A full-stack application that performs **Named Entity Recognition (NER)** on her
 |---|---|
 | **Cultural Authenticity** | Entities related to traditional usage, cultural claims, historical context |
 | **Scientific Validity** | Entities backed by research, clinical data, bioactive compounds |
-| **Safety Considerations** | Entities related to contraindications, dosage, drug interactions |
+| **Safety & Compliance** | Entities related to contraindications, dosage, drug interactions |
 
 ### Supported AI Models
 
-| Provider | Models |
-|---|---|
-| **Anthropic Claude** | Claude Sonnet 4, Claude Opus 4, Claude Haiku 4 |
-| **OpenAI GPT** | GPT-4o, GPT-4 Turbo, GPT-3.5 Turbo |
-| **Google Gemini** | Gemini 2.0 Flash, Gemini 1.5 Pro |
-| **Meta Llama (via Groq)** | Llama 3.3 70B, Llama 3.1 8B |
+| Provider | Display Name | Model ID |
+|---|---|---|
+| **Anthropic Claude** | Claude Sonnet 4 | `claude-sonnet-4-20250514` |
+| | Claude Opus 4 | `claude-opus-4-20250514` |
+| | Claude Haiku 4 | `claude-haiku-4-20250514` |
+| **OpenAI GPT** | GPT-4o | `gpt-4o` |
+| | GPT-4 Turbo | `gpt-4-turbo-preview` |
+| | GPT-3.5 Turbo | `gpt-3.5-turbo` |
+| **Google Gemini** | Gemini 2.0 Flash | `gemini-2.0-flash` |
+| | Gemini 1.5 Pro | `gemini-1.5-pro` |
+| **Meta Llama (via Groq)** | Llama 3.3 70B | `llama-3.3-70b-versatile` |
+| | Llama 3.1 8B | `llama-3.1-8b-instant` |
+
+> **Note:** The Python backend uses `gemini-2.0-flash-exp` for Gemini 2.0 Flash instead of `gemini-2.0-flash`. Both are functionally equivalent but may differ in availability.
 
 ### Architecture
 
@@ -45,10 +58,39 @@ A full-stack application that performs **Named Entity Recognition (NER)** on her
 
 | Method | Endpoint | Description |
 |---|---|---|
-| `GET` | `/api/models` | List available models |
+| `GET` | `/api/models` | List available models and providers |
 | `POST` | `/api/analyze` | Analyze text for named entities |
-| `POST` | `/api/summary` | Generate AI-driven summary |
-| `GET` | `/health` | Health check |
+| `POST` | `/api/summary` | Generate AI-driven summary from all three category results |
+| `GET` | `/health` | Health check — returns status, model count, and active providers |
+
+**POST `/api/analyze` request body:**
+```json
+{
+  "text": "article content...",
+  "category": "cultural | scientific | safety",
+  "model": "claude-sonnet-4"
+}
+```
+
+**POST `/api/analyze` response:**
+```json
+{
+  "entities": [...],
+  "count": 12,
+  "completeness": 95,
+  "efficacy": 88,
+  "model_used": "claude-sonnet-4"
+}
+```
+
+### Export Formats
+
+Analysis results can be exported in four formats:
+
+- `.txt` — plain text
+- `.docx` — Word document
+- `.xlsx` — Excel spreadsheet
+- `.pdf` — PDF document
 
 ### Setup
 
@@ -83,16 +125,16 @@ GROQ_API_KEY=
 
 ### Overview
 
-A browser-based **automated quality scoring calculator** that evaluates herbal article output from a multi-agent pipeline against 4 Key Performance Indicators (KPIs) before publication.
+A browser-based **automated quality scoring calculator** that evaluates herbal article output from a multi-agent pipeline against 4 Key Performance Indicators (KPIs) before publication. No server required — runs entirely in the browser.
 
 ### The 4 KPIs
 
-| KPI | What It Measures |
-|---|---|
-| **Robustness** | Data completeness — how much of the available research data was used |
-| **Clarity** | Hallucination detection — whether the article contains false or unsupported information |
-| **Efficacy** | Market trend alignment — coverage of relevant current market trends |
-| **Feasibility** | Implementation readiness — safety data completeness and compliance plan clarity |
+| KPI | What It Measures | Formula |
+|---|---|---|
+| **Robustness** | Data completeness — how much of the available research data was used | `(N_total − N_dropped) / N_total × 100` |
+| **Clarity** | Hallucination detection — whether the article contains false or unsupported claims | `(1 − k/N) × 100` |
+| **Efficacy** | Market trend alignment — coverage of relevant current market trends | `N_relevant / N_total × 100` |
+| **Feasibility** | Implementation readiness — safety data completeness and compliance plan clarity | `E_satisfied / E_total × 100` |
 
 ### Required Input Files
 
@@ -109,13 +151,26 @@ The calculator processes 4 task output files from an upstream multi-agent system
 
 | Decision | Criteria |
 |---|---|
-| **GO** | Robustness ≥ 90%, Clarity = 100%, Efficacy ≥ 85%, Feasibility ≥ 75% |
-| **CONDITIONAL GO** | Some scores below GO threshold but above NO-GO thresholds |
-| **NO-GO** | Clarity < 100% (hallucinations detected), Robustness < 80%, Feasibility < 60%, or Efficacy < 70% |
+| **GO** | Robustness ≥ 90% **and** Clarity = 100% **and** Efficacy ≥ 85% **and** Feasibility ≥ 75% |
+| **CONDITIONAL GO** | Robustness 80–89% **or** Efficacy 70–84% **or** Feasibility 60–74% (with Clarity = 100%) |
+| **NO-GO** | Clarity < 100% (any hallucinations), **or** Robustness < 80%, **or** Feasibility < 60%, **or** Efficacy < 70% |
+
+### Features
+
+- Drag-and-drop file upload for each task
+- Optional herb name and article title metadata fields (saved to history)
+- Entity-level detail display — shows specific dropped and hallucinated entities
+- Detailed calculation breakdown with formula and actual values per KPI
+- **Evaluation history** — results are persisted in browser `localStorage`; includes timestamp, herb name, article title, all 4 scores, and decision
+- **CSV export** of history records
+- Clear history button
 
 ### Usage
 
-Open `Multi-LLM-4KPIs-Evaluation/score_calculator.html` directly in a browser — no server required. Drag and drop the 4 task files into the designated upload areas and the calculator will automatically score and render a decision.
+1. Open `Multi-LLM-4KPIs-Evaluation/score_calculator.html` in a browser
+2. (Optional) Enter herb name and article title
+3. Drop each task file into its corresponding upload area
+4. Scores and decision render automatically
 
 ---
 
@@ -128,6 +183,7 @@ Article Draft
 [Multi-LLM-NER-KPI-with-Backend]
   Extract & categorize named entities
   across Cultural / Scientific / Safety dimensions
+  using any of 10 supported LLMs
      │
      ▼
 [Multi-LLM-4KPIs-Evaluation]

@@ -548,6 +548,17 @@
                 </div>
             </div>
 
+            <div class="upload-grid" style="margin-top: 20px;">
+                <div class="model-input">
+                    <label for="herb-name">🌿 ชื่อสมุนไพร</label>
+                    <input type="text" id="herb-name" placeholder="เช่น ขิง, ขมิ้น, กระเทียม..." />
+                </div>
+                <div class="model-input">
+                    <label for="article-name">📄 ชื่อบทความ</label>
+                    <input type="text" id="article-name" placeholder="เช่น บทความสมุนไพรไทย..." />
+                </div>
+            </div>
+
             <button class="btn" id="calculate-btn" disabled>
                 🧮 คำนวณและบันทึกคะแนน
             </button>
@@ -678,6 +689,8 @@
                     <tr>
                         <td>${i + 1}</td>
                         <td>${r.timestamp}</td>
+                        <td>${r.herbName || '-'}</td>
+                        <td>${r.articleName || '-'}</td>
                         <td style="color:#1976D2;font-weight:700;font-family:'JetBrains Mono',monospace">${r.robustness}%</td>
                         <td style="color:#388E3C;font-weight:700;font-family:'JetBrains Mono',monospace">${r.clarity}%</td>
                         <td style="color:#F57C00;font-weight:700;font-family:'JetBrains Mono',monospace">${r.efficacy}%</td>
@@ -693,6 +706,8 @@
                         <tr>
                             <th>#</th>
                             <th>วันที่/เวลา</th>
+                            <th>สมุนไพร</th>
+                            <th>บทความ</th>
                             <th>Robustness</th>
                             <th>Clarity</th>
                             <th>Efficacy</th>
@@ -712,10 +727,12 @@
                 return;
             }
 
-            const headers = ['#', 'Timestamp', 'Robustness(%)', 'Clarity(%)', 'Efficacy(%)', 'Feasibility(%)', 'Decision'];
+            const headers = ['#', 'Timestamp', 'สมุนไพร', 'บทความ', 'Robustness(%)', 'Clarity(%)', 'Efficacy(%)', 'Feasibility(%)', 'Decision'];
             const rows = history.map((r, i) => [
                 i + 1,
                 `"${r.timestamp}"`,
+                `"${r.herbName || ''}"`,
+                `"${r.articleName || ''}"`,
                 r.robustness,
                 r.clarity,
                 r.efficacy,
@@ -780,9 +797,11 @@
 
                 // Save to localStorage
                 const now = new Date();
-                const timestamp = now.toLocaleDateString('th-TH') + ' ' + now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+                const timestamp = now.toLocaleDateString('th-TH') + ' ' + now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
                 saveRecord({
                     timestamp,
+                    herbName: document.getElementById('herb-name').value.trim(),
+                    articleName: document.getElementById('article-name').value.trim(),
                     robustness: results.robustness,
                     clarity: results.clarity,
                     efficacy: results.efficacy,

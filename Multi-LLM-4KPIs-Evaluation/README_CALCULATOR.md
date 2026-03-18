@@ -1,111 +1,134 @@
-# 🧮 Automated Score Calculator - คู่มือการใช้งาน
+# Automated Score Calculator - User Guide
 
-## 📋 ภาพรวม
+## Overview
 
-เครื่องมือนี้ใช้สำหรับคำนวณคะแนนอัตโนมัติจากไฟล์ logs ของระบบ Multi-Agent โดยวิเคราะห์ 4 มิติหลัก:
+This tool automatically calculates scores from Multi-Agent system log files, evaluating 4 key dimensions:
 
-1. **Robustness** - ความสมบูรณ์ของข้อมูล
-2. **Clarity** - การตรวจจับข้อมูลปลอม (Hallucination)
-3. **Efficacy** - ความเกี่ยวข้องกับตลาด
-4. **Feasibility** - ความเป็นไปได้ในการนำไปใช้
-
----
-
-## 📁 ไฟล์ที่ต้องใช้
-
-คุณต้องเตรียมไฟล์ทั้งหมด **4 ไฟล์**:
-
-| ไฟล์ | รายละเอียด | ตัวอย่าง |
-|------|-----------|---------|
-| **Task 11** | Master Fact Sheet - รวมข้อมูลทั้งหมดจากทุก tasks | `task_11_*.txt` |
-| **Task 13** | Final Article - บทความสมุนไพรฉบับสมบูรณ์ | `task_13_*.txt` |
-| **Task 14** | Data Integrity Report - รายงานความสมบูรณ์ | `task_14_*.txt` |
-| **Task 15** | Strategy Report - รายงานเชิงกลยุทธ์ | `task_15_*.txt` |
+1. **Robustness** - Data completeness
+2. **Clarity** - Hallucination detection
+3. **Efficacy** - Market relevance
+4. **Feasibility** - Implementation viability
 
 ---
 
-## 🚀 วิธีการใช้งาน
+## Required Files
 
-### ขั้นตอนที่ 1: เปิดไฟล์ HTML
-1. ดับเบิลคลิกที่ไฟล์ `score_calculator.html`
-2. ไฟล์จะเปิดในเว็บเบราว์เซอร์
+You need to prepare **4 files** in total:
 
-### ขั้นตอนที่ 2: อัปโหลดไฟล์
-1. คลิกที่พื้นที่อัปโหลดแต่ละช่อง
-2. เลือกไฟล์ที่ตรงกับ Task นั้นๆ
-3. เมื่ออัปโหลดครบทั้ง 4 ไฟล์ ปุ่ม "คำนวณคะแนน" จะพร้อมใช้งาน
-
-### ขั้นตอนที่ 3: คำนวณคะแนน
-1. คลิกปุ่ม "🧮 คำนวณคะแนน"
-2. รอประมวลผลสักครู่
-3. ระบบจะแสดงผลลัพธ์โดยอัตโนมัติ
+| File | Description | Example |
+|------|-------------|---------|
+| **Task 11** | Master Fact Sheet — consolidated data from all tasks | `task_11_*.txt` |
+| **Task 13** | Final Article — complete herbal medicine article | `task_13_*.txt` |
+| **Task 14** | Data Integrity Report | `task_14_*.txt` |
+| **Task 15** | Strategy Report | `task_15_*.txt` |
 
 ---
 
-## 📊 การแปลผลคะแนน
+## How to Use
 
-### คะแนนแต่ละมิติ
+### Step 1: Open the HTML File
+1. Double-click `score_calculator.html`
+2. It will open in your web browser
 
-#### 1. Robustness (ความสมบูรณ์)
-- **100%** = ใช้ข้อมูลครบทุกอย่าง
-- **95%** = ขาดข้อมูลสำคัญบางส่วน
-- **90%** = ขาดข้อมูลหลายจุด
-- **<80%** = ขาดข้อมูลมากเกินไป
+### Step 2: Upload Files
+1. Click each upload area
+2. Select the file matching that task
+3. Once all 4 files are uploaded, the "Calculate & Save Scores" button becomes available
 
-#### 2. Clarity (ความชัดเจน)
-- **100%** = ไม่มี Hallucination
-- **90%** = มีข้อมูลปลอมเล็กน้อย
-- **<70%** = มีข้อมูลปลอมมาก
+### Step 3: Fill in Article Info (Optional)
+- **Herb Name** — e.g., Ginger, Turmeric, Garlic
+- **Article Title** — to identify the run being recorded
 
-#### 3. Efficacy (ประสิทธิผล)
-- **100%** = สะท้อน Trends ครบถ้วน
-- **95%** = ครอบคลุม Trends หลัก
-- **85%** = ครอบคลุมพอสมควร
-- **<70%** = ไม่สะท้อน Trends สำคัญ
-
-#### 4. Feasibility (ความเป็นไปได้)
-- **100%** = ข้อมูลครบ แผนชัดเจน
-- **85%** = Safety ครบ Compliance บางส่วน
-- **70%** = Safety บางส่วน
-- **<60%** = ขาด Safety สำคัญ
+### Step 4: Calculate Scores
+1. Click "Calculate & Save Scores"
+2. Wait a moment for processing
+3. Results will be displayed and **automatically saved to history**
 
 ---
 
-## ✅ เกณฑ์การตัดสินใจ
+## Interpreting Scores
 
-### 🟢 GO (เผยแพร่ได้)
+### Score Ranges per Dimension
+
+#### 1. Robustness (Data Completeness)
+- **100%** = All data used
+- **95%** = Some important data missing
+- **90%** = Multiple data gaps
+- **<80%** = Too much data missing
+
+#### 2. Clarity (Hallucination)
+- **100%** = No hallucinations
+- **90%** = Minor hallucinated content
+- **<70%** = Significant hallucinations
+
+#### 3. Efficacy (Effectiveness)
+- **100%** = Fully reflects market trends
+- **95%** = Covers major trends
+- **85%** = Moderately covered
+- **<70%** = Misses key trends
+
+#### 4. Feasibility (Viability)
+- **100%** = Complete data, clear plan
+- **85%** = Full safety, partial compliance
+- **70%** = Partial safety coverage
+- **<60%** = Critical safety gaps
+
+---
+
+## Decision Criteria
+
+### GO (Ready to publish)
 - Robustness ≥ 90%
-- Clarity = 100% (ไม่มี hallucination)
+- Clarity = 100% (no hallucinations)
 - Efficacy ≥ 85%
 - Feasibility ≥ 75%
 
-### 🟡 CONDITIONAL GO (ต้องปรับปรุง)
-- คะแนนบางด้านต่ำกว่า GO แต่ไม่ถึง NO-GO
-- ต้องแก้ไขปัญหาที่ระบุก่อนเผยแพร่
+### CONDITIONAL GO (Needs revision)
+- Some scores below GO threshold but not at NO-GO level
+- Issues must be resolved before publishing
 
-### 🔴 NO-GO (ห้ามเผยแพร่)
-- Clarity < 100% (มี hallucination)
-- Robustness < 80% (ขาดข้อมูลมาก)
-- Feasibility < 60% (ขาด Safety สำคัญ)
-- Efficacy < 70% (ไม่เกี่ยวข้องกับตลาด)
-
----
-
-## 🔍 การตรวจสอบรายละเอียด
-
-ระบบจะแสดงข้อมูลเพิ่มเติม:
-
-### Dropped Entities (ข้อมูลที่หายไป)
-- รายการข้อมูลที่มีใน Master Fact Sheet แต่ไม่มีในบทความ
-- **หมายเหตุ:** ข้อมูล "Not Found" ไม่นับเป็น Dropped
-
-### Hallucinated Entities (ข้อมูลปลอม)
-- รายการข้อมูลที่มีในบทความแต่ไม่มีใน Master Fact Sheet
-- **สำคัญ:** มี hallucination = NO-GO ทันที
+### NO-GO (Do not publish)
+- Clarity < 100% (hallucinations present)
+- Robustness < 80% (too much missing data)
+- Feasibility < 60% (critical safety gaps)
+- Efficacy < 70% (not market-relevant)
 
 ---
 
-## 📝 ตัวอย่างผลลัพธ์
+## History Database
+
+Every calculation is **automatically saved** to browser localStorage.
+
+### History Table
+Columns: Date/Time, Herb Name, Article Title, 4 KPI scores, Decision
+
+### Export CSV
+- Click **Export CSV** to download all records as a `.csv` file
+- Thai language supported in Excel (BOM encoding)
+- Filename: `llm_scores_YYYY-MM-DD.csv`
+
+### Clear History
+- Click **Clear History** and confirm to delete all records
+
+> **Note:** Data is stored in the browser's localStorage. Opening in a different browser or incognito mode will not show previous history.
+
+---
+
+## Detail Views
+
+The system also shows additional information:
+
+### Dropped Entities
+- Items present in the Master Fact Sheet but missing from the article
+- **Note:** "Not Found" values are not counted as dropped
+
+### Hallucinated Entities
+- Items present in the article but absent from the Master Fact Sheet
+- **Important:** Any hallucination may trigger an immediate NO-GO
+
+---
+
+## Example Output
 
 ```
 Robustness: 95%
@@ -113,58 +136,62 @@ Clarity: 100%
 Efficacy: 95%
 Feasibility: 85%
 
-การตัดสินใจ: GO ✅
-ทุกคะแนนผ่านเกณฑ์ สามารถเผยแพร่ได้
+Decision: GO ✅
+All scores pass the threshold. Ready to publish.
 ```
 
 ---
 
-## 💡 เคล็ดลับ
+## Tips
 
-1. **ตรวจสอบไฟล์ก่อนอัปโหลด**
-   - ตรวจสอบว่าไฟล์เป็น Task ที่ถูกต้อง
-   - ไฟล์ต้องเป็นนามสกุล `.txt`
+1. **Verify files before uploading**
+   - Make sure each file matches the correct Task number
+   - Files must be `.txt` format
 
-2. **การแปลผล Dropped Entities**
-   - ถ้าข้อมูลเป็น "Not Found" ในต้นทาง = ไม่ใช่ความผิด
-   - เฉพาะข้อมูลที่มีจริงแต่หายไปเท่านั้นที่เป็นปัญหา
+2. **Interpreting Dropped Entities**
+   - If the source value is "Not Found" — not a fault
+   - Only data that exists in source but is missing from the article counts as a problem
 
 3. **Hallucination = Critical Issue**
-   - แม้มีเพียง 1 รายการ ก็อาจทำให้เป็น NO-GO
-   - ตรวจสอบ Hallucinated Entities อย่างละเอียด
+   - Even a single hallucinated item may result in NO-GO
+   - Review the Hallucinated Entities list carefully
 
-4. **Partial Satisfaction ใน Feasibility**
-   - Dependencies บางอย่างอาจไม่ครบ 100%
-   - เช่น Compliance data มีบางส่วน = 40%
-
----
-
-## 🐛 การแก้ปัญหา
-
-### ปัญหา: ปุ่มคำนวณไม่ทำงาน
-- **แก้ไข:** ตรวจสอบว่าอัปโหลดครบทั้ง 4 ไฟล์
-
-### ปัญหา: คะแนนไม่ถูกต้อง
-- **แก้ไข:** ตรวจสอบรูปแบบไฟล์ว่าตรงกับ format ที่ระบบคาดหวัง
-
-### ปัญหา: ไม่แสดงผล Dropped Entities
-- **แก้ไข:** ตรวจสอบว่า Task 14 มี section "Dropped Entities"
+4. **Partial Satisfaction in Feasibility**
+   - Some dependencies may not be 100% complete
+   - e.g., partial compliance data = 40%
 
 ---
 
-## 📚 เอกสารเพิ่มเติม
+## Troubleshooting
 
-- `audit_logic_flowchart.docx` - Logic และ Flowchart ของระบบ Audit
-- `automated_evaluation_protocol.docx` - หลักการคำนวณแบบละเอียด
-- `evaluation_protocol_interactive.html` - ตัวอย่างการคำนวณแบบ interactive
+### Calculate button not working
+- **Fix:** Make sure all 4 files have been uploaded
+
+### Incorrect scores
+- **Fix:** Verify that the file format matches what the system expects
+
+### Dropped Entities not showing
+- **Fix:** Check that Task 14 contains a "Dropped Entities" section
 
 ---
 
-## 📞 ติดต่อสอบถาม
+## Additional Documentation
 
-หากพบปัญหาหรือมีข้อสงสัย กรุณาตรวจสอบเอกสาร Logic ประกอบ
+- `audit_logic_flowchart.docx` - System audit logic and flowchart
+- `automated_evaluation_protocol.docx` - Detailed calculation methodology
+- `evaluation_protocol_interactive.html` - Interactive calculation example
 
 ---
 
-**เวอร์ชัน:** 1.0  
-**วันที่อัปเดตล่าสุด:** 6 กุมภาพันธ์ 2026
+## Support
+
+If you encounter issues or have questions, please refer to the Logic documentation.
+
+---
+
+**Version:** 2.0
+**Last updated:** March 17, 2026
+
+### Changelog
+- **v2.0** - Added history database (localStorage), CSV export, herb name and article title fields
+- **v1.0** - 4 KPI score calculation with Go/No-Go decision

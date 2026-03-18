@@ -435,6 +435,95 @@
             margin-bottom: 8px;
         }
 
+        /* History Section Styles */
+        .history-section {
+            background: var(--card);
+            padding: 32px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            margin-top: 32px;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .history-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .history-actions { display: flex; gap: 10px; }
+
+        .btn-sm {
+            padding: 8px 18px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'IBM Plex Sans Thai', sans-serif;
+            transition: all 0.2s;
+        }
+
+        .btn-export { background: var(--secondary); color: white; }
+        .btn-export:hover { background: #1565C0; }
+
+        .btn-clear { background: #FFEBEE; color: var(--danger); border: 1px solid #FFCDD2; }
+        .btn-clear:hover { background: #FFCDD2; }
+
+        .history-table-wrap { overflow-x: auto; }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .history-table th {
+            background: #F5F5F5;
+            padding: 12px 14px;
+            text-align: left;
+            font-weight: 700;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .history-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+
+        .history-table tr:hover td { background: #F1F8E9; }
+        .history-table tr:last-child td { border-bottom: none; }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .badge-pass { background: #C8E6C9; color: #2E7D32; }
+        .badge-fail { background: #FFCDD2; color: #C62828; }
+
+        .history-empty {
+            text-align: center;
+            color: var(--text-light);
+            padding: 40px;
+            font-size: 1rem;
+        }
+
         /* Export Section Styles */
         .export-section {
             background: var(--card);
@@ -584,6 +673,19 @@
                 </label>
             </div>
 
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 20px;">
+                <div>
+                    <label class="model-label" for="herb-name">🌿 ชื่อสมุนไพร</label>
+                    <input type="text" id="herb-name" placeholder="เช่น ขิง, ขมิ้น, กระเทียม..."
+                        style="width:100%; padding:12px 16px; border:2px solid var(--border); border-radius:8px; font-size:1rem; font-family:'IBM Plex Sans Thai',sans-serif; transition:border-color 0.3s;">
+                </div>
+                <div>
+                    <label class="model-label" for="article-title">📄 ชื่อบทความ</label>
+                    <input type="text" id="article-title" placeholder="เช่น บทความสมุนไพรไทย..."
+                        style="width:100%; padding:12px 16px; border:2px solid var(--border); border-radius:8px; font-size:1rem; font-family:'IBM Plex Sans Thai',sans-serif; transition:border-color 0.3s;">
+                </div>
+            </div>
+
             <button class="btn" id="analyze-btn" disabled>
                 🤖 วิเคราะห์ด้วย AI
             </button>
@@ -698,14 +800,121 @@
                 <div id="safety-entities"></div>
             </div>
         </div>
+
+        <!-- History Section -->
+        <div class="history-section">
+            <div class="history-header">
+                <div class="history-title">📊 ประวัติการวิเคราะห์</div>
+                <div class="history-actions">
+                    <button class="btn-sm btn-export" onclick="exportNERCSV()">⬇️ Export CSV</button>
+                    <button class="btn-sm btn-clear" onclick="clearNERHistory()">🗑️ ล้างประวัติ</button>
+                </div>
+            </div>
+            <div class="history-table-wrap">
+                <div id="ner-history-container"></div>
+            </div>
+        </div>
     </div>
 
     <script>
+        // ============================================================
+        // History Database (localStorage)
+        // ============================================================
+        const NER_DB_KEY = 'ner_analysis_history';
+
+        function loadNERHistory() {
+            try { return JSON.parse(localStorage.getItem(NER_DB_KEY) || '[]'); }
+            catch { return []; }
+        }
+
+        function saveNERRecord(record) {
+            const history = loadNERHistory();
+            history.unshift(record);
+            localStorage.setItem(NER_DB_KEY, JSON.stringify(history));
+        }
+
+        function clearNERHistory() {
+            if (!confirm('ต้องการล้างประวัติทั้งหมดใช่ไหม?')) return;
+            localStorage.removeItem(NER_DB_KEY);
+            renderNERHistory();
+        }
+
+        function renderNERHistory() {
+            const history = loadNERHistory();
+            const container = document.getElementById('ner-history-container');
+            if (history.length === 0) {
+                container.innerHTML = '<div class="history-empty">ยังไม่มีข้อมูล — วิเคราะห์บทความแล้วจะบันทึกที่นี่อัตโนมัติ</div>';
+                return;
+            }
+            const rows = history.map((r, i) => {
+                const badgeClass = r.status === 'PASS' ? 'badge-pass' : 'badge-fail';
+                return `
+                    <tr>
+                        <td>${i + 1}</td>
+                        <td>${r.timestamp}</td>
+                        <td>${r.herbName || '-'}</td>
+                        <td>${r.articleTitle || '-'}</td>
+                        <td>${r.model || '-'}</td>
+                        <td style="font-family:'JetBrains Mono',monospace">${r.cultural}</td>
+                        <td style="font-family:'JetBrains Mono',monospace">${r.scientific}</td>
+                        <td style="font-family:'JetBrains Mono',monospace">${r.safety}</td>
+                        <td><span class="badge ${badgeClass}">${r.status}</span></td>
+                    </tr>
+                `;
+            }).join('');
+            container.innerHTML = `
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>วันที่/เวลา</th>
+                            <th>สมุนไพร</th>
+                            <th>บทความ</th>
+                            <th>Model</th>
+                            <th>Cultural</th>
+                            <th>Scientific</th>
+                            <th>Safety</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>${rows}</tbody>
+                </table>
+            `;
+        }
+
+        function exportNERCSV() {
+            const history = loadNERHistory();
+            if (history.length === 0) { alert('ยังไม่มีข้อมูลให้ export'); return; }
+            const headers = ['#', 'Timestamp', 'สมุนไพร', 'บทความ', 'Model', 'Cultural', 'Scientific', 'Safety', 'Status'];
+            const rows = history.map((r, i) => [
+                i + 1,
+                `"${r.timestamp}"`,
+                `"${r.herbName || ''}"`,
+                `"${r.articleTitle || ''}"`,
+                `"${r.model || ''}"`,
+                r.cultural,
+                r.scientific,
+                r.safety,
+                r.status
+            ].join(','));
+            const csv = [headers.join(','), ...rows].join('\n');
+            const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `ner_history_${new Date().toISOString().slice(0,10)}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
         const API_BASE = 'http://localhost:3000/api';
         let articleContent = '';
         let selectedModel = 'claude-sonnet-4';
         let analysisResults = null; // Store results for export
         let articleFileName = ''; // Store filename for export
+
+        function getHerbName() { return document.getElementById('herb-name').value.trim() || '-'; }
+        function getArticleTitle() { return document.getElementById('article-title').value.trim() || articleFileName || '-'; }
 
         // File upload handler
         const fileInput = document.getElementById('file-article');
@@ -744,6 +953,23 @@
                 const results = await analyzeWithBackend(articleContent, selectedModel);
                 analysisResults = results; // Store for export
                 displayResults(results);
+
+                // Save to history
+                const now = new Date();
+                const timestamp = now.toLocaleDateString('th-TH') + ' ' + now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                const allPass = results.cultural.count >= 10 && results.scientific.count >= 10 && results.safety.count >= 10;
+                saveNERRecord({
+                    timestamp,
+                    herbName: getHerbName(),
+                    articleTitle: getArticleTitle(),
+                    model: results.model_used,
+                    cultural: results.cultural.count,
+                    scientific: results.scientific.count,
+                    safety: results.safety.count,
+                    status: allPass ? 'PASS' : 'FAIL'
+                });
+                renderNERHistory();
+
                 document.getElementById('loading').classList.remove('show');
                 document.getElementById('results').classList.add('show');
             } catch (error) {
@@ -932,7 +1158,8 @@
 ================================================================================
 
 Report Generated: ${timestamp}
-Article: ${articleFileName}
+Herb: ${getHerbName()}
+Article: ${getArticleTitle()}
 AI Model Used: ${r.model_used}
 
 ================================================================================
@@ -1024,8 +1251,14 @@ Generated by Multi-LLM NER Calculator
                         }),
                         new Paragraph({
                             children: [
+                                new TextRun({ text: 'Herb: ', bold: true }),
+                                new TextRun(getHerbName())
+                            ]
+                        }),
+                        new Paragraph({
+                            children: [
                                 new TextRun({ text: 'Article: ', bold: true }),
-                                new TextRun(articleFileName)
+                                new TextRun(getArticleTitle())
                             ]
                         }),
                         new Paragraph({
@@ -1172,7 +1405,8 @@ Generated by Multi-LLM NER Calculator
             const summaryData = [
                 ['NER ANALYSIS REPORT'],
                 ['Generated', new Date().toLocaleString('th-TH')],
-                ['Article', articleFileName],
+                ['Herb', getHerbName()],
+                ['Article', getArticleTitle()],
                 ['Model', r.model_used],
                 ['Decision', decision],
                 [],
@@ -1253,7 +1487,9 @@ Generated by Multi-LLM NER Calculator
             doc.setFont(undefined, 'normal');
             doc.text(`Generated: ${new Date().toLocaleString('en-US')}`, 20, y);
             y += 6;
-            doc.text(`Article: ${articleFileName}`, 20, y);
+            doc.text(`Herb: ${getHerbName()}`, 20, y);
+            y += 6;
+            doc.text(`Article: ${getArticleTitle()}`, 20, y);
             y += 6;
             doc.text(`Model: ${r.model_used}`, 20, y);
             y += 6;
@@ -1419,6 +1655,9 @@ Generated by Multi-LLM NER Calculator
             // Save
             doc.save(`NER_Report_${articleFileName}_${new Date().toISOString().split('T')[0]}.pdf`);
         }
+
+        // Init
+        renderNERHistory();
     </script>
 </body>
 </html>
